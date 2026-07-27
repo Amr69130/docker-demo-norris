@@ -164,6 +164,9 @@ services:
       - private_storage:/var/www/oro/var/data
 
   install:
+    profiles:
+      - tools
+
     image: $ORO_IMAGE:$ORO_IMAGE_TAG
     command: install $ORO_INSTALL_OPTIONS
     user: $ORO_USER_RUNTIME
@@ -182,6 +185,9 @@ services:
       - private_storage:/var/www/oro/var/data
 
   restore:
+    profiles:
+      - tools
+
     image: $ORO_IMAGE_INIT${ORO_LANGUAGE_SUFFIX-}:${ORO_IMAGE_TAG_OLD-$ORO_IMAGE_TAG}
     command: restore
     user: $ORO_USER_RUNTIME
