@@ -15,6 +15,12 @@ services:
       ORO_ENV: prod
       ORO_LOG_PATH: php://stderr
 
+    depends_on: !override
+      db:
+        condition: service_healthy
+      volume-init:
+        condition: service_completed_successfully
+
     stop_grace_period: 30s
 
   ws:
@@ -37,3 +43,5 @@ services:
       ORO_LOG_PATH: php://stderr
 
     stop_grace_period: 30s
+
+  mail: !reset null
