@@ -1,0 +1,19 @@
+services:
+  db:
+    image: docker.io/oroinc/pgsql:${ORO_PG_VER:?ORO_PG_VER doit être définie}
+    labels:
+      com.symfony.server.service-prefix: ORO_DB
+    environment:
+      POSTGRES_ROOT_PASSWORD: ${ORO_DB_ROOT_PASSWORD:?ORO_DB_ROOT_PASSWORD doit être défini}
+      POSTGRES_DB: ${ORO_DB_NAME:?ORO_DB_NAME doit être défini}
+      POSTGRES_USER: ${ORO_DB_USER:?ORO_DB_USER doit être défini}
+      POSTGRES_PASSWORD: ${ORO_DB_PASSWORD:?ORO_DB_PASSWORD doit être défini}
+    healthcheck:
+      test: "pg_isready -U$${POSTGRES_USER} -d$${POSTGRES_DB}"
+      start_period: 60s
+    restart: unless-stopped
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
