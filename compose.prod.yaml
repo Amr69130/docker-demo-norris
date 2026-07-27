@@ -1,0 +1,47 @@
+# Différences appliquées uniquement lors d'un déploiement en production.
+services:
+  web:
+    environment:
+      ORO_ENV: prod
+
+    ports: !override
+      - target: ${ORO_NGINX_HTTP_PORT:?ORO_NGINX_HTTP_PORT doit être défini}
+        published: "${ORO_HTTP_PORT:-80}"
+        host_ip: ${ORO_BIND_ADDRESS:-127.0.0.1}
+        protocol: tcp
+
+  php-fpm-app:
+    environment:
+      ORO_ENV: prod
+      ORO_LOG_PATH: php://stderr
+
+    depends_on: !override
+      db:
+        condition: service_healthy
+      volume-init:
+        condition: service_completed_successfully
+
+    stop_grace_period: 30s
+
+  ws:
+    environment:
+      ORO_ENV: prod
+      ORO_LOG_PATH: php://stderr
+
+    stop_grace_period: 30s
+
+  consumer:
+    environment:
+      ORO_ENV: prod
+      ORO_LOG_PATH: php://stderr
+
+    stop_grace_period: 60s
+
+  cron:
+    environment:
+      ORO_ENV: prod
+      ORO_LOG_PATH: php://stderr
+
+    stop_grace_period: 30s
+
+  mail: !reset null

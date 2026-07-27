@@ -1,3 +1,7 @@
+# La base PostgreSQL est isolée dans un fichier inclus.
+include:
+  - compose/database.yaml
+
 services:
   application:
     image: $ORO_IMAGE_BASE_RUNTIME:$ORO_BASELINE_VERSION
@@ -160,6 +164,9 @@ services:
       - private_storage:/var/www/oro/var/data
 
   install:
+    profiles:
+      - tools
+
     image: $ORO_IMAGE:$ORO_IMAGE_TAG
     command: install $ORO_INSTALL_OPTIONS
     user: $ORO_USER_RUNTIME
@@ -178,6 +185,9 @@ services:
       - private_storage:/var/www/oro/var/data
 
   restore:
+    profiles:
+      - tools
+
     image: $ORO_IMAGE_INIT${ORO_LANGUAGE_SUFFIX-}:${ORO_IMAGE_TAG_OLD-$ORO_IMAGE_TAG}
     command: restore
     user: $ORO_USER_RUNTIME
@@ -197,19 +207,7 @@ services:
       - public_storage:/var/www/oro/public/media
       - private_storage:/var/www/oro/var/data
 
-  db:
-    image: docker.io/oroinc/pgsql:${ORO_PG_VER}
-    labels:
-      com.symfony.server.service-prefix: ORO_DB
-    environment:
-      POSTGRES_ROOT_PASSWORD: ${ORO_DB_ROOT_PASSWORD}
-      POSTGRES_DB: ${ORO_DB_NAME}
-      POSTGRES_USER: ${ORO_DB_USER}
-      POSTGRES_PASSWORD: ${ORO_DB_PASSWORD}
-    healthcheck:
-      test: "pg_isready -U$${POSTGRES_USER} -d$${POSTGRES_DB}"
-      start_period: 60s
-    restart: unless-stopped
+
 
   mail:
     image: mailhog/mailhog
